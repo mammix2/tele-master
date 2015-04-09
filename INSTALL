@@ -1,0 +1,9 @@
+Building tele
+
+See doc/readme-qt.rst for instructions on building tele QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of tele.
+
+See doc/build-*.txt for instructions on building teled,
+the intended-for-services, no-graphical-interface, reference
+implementation of tele.
