@@ -1,5 +1,7 @@
 Tele (TEL)
 
+Tor only Network, uses following ports
+
 ===================================
 
 Ports 9985 & RPC 9984
