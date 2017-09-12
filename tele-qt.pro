@@ -1,15 +1,23 @@
 TEMPLATE = app
-TARGET = tele-qt
+DEFINES += fName1 fName2
 VERSION = 1.1.0.0
+contains(QT_ARCH, i386) {
+    fName2 = "-qt-x86-v"
+} else {
+    fName2 = "-qt-x64-v"
+}
+TARGET = $$fName1$$fName2$$VERSION
 INCLUDEPATH += src src/json \
     src/qt \
-    src/tor 
+    src/tor
 QT += core gui network
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
-CONFIG += thread static
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-lessThan(QT_MAJOR_VERSION, 5): CONFIG += static
+CONFIG += thread warn_off
+
+lessThan(QT_MAJOR_VERSION, 5) {
+    CONFIG += static
+}
 QMAKE_CXXFLAGS = -fpermissive
 
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -18,27 +26,59 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 win32 {
-    LIBS += -lshlwapi
-    LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-    LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -lcrypt32
-    LIBS += -lws2_32 -lole32 -loleaut32 -luuid -lgdi32
-    LIBS += -lboost_system-mgw49-mt-s-1_57 -lboost_filesystem-mgw49-mt-s-1_57 -lboost_program_options-mgw49-mt-s-1_57 -lboost_thread-mgw49-mt-s-1_57
-    LIBS += -L"C:/deps/MinGW/msys/1.0/local/lib"
-    LIBS += -L"C:/deps/libcommuni-3.2.0/lib"
 
-    INCLUDEPATH += "C:/deps/MinGW/msys/1.0/local/include"
+    ## Windows common build here
 
-    BOOST_LIB_SUFFIX=-mgw49-mt-s-1_57
-    BOOST_INCLUDE_PATH=C:/deps/boost_1_57_0
-    BOOST_LIB_PATH=C:/deps/boost_1_57_0/stage/lib
-    BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
-    BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-    OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1l/include
-    OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1l
-    MINIUPNPC_INCLUDE_PATH=C:/deps/
-    MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
-    QRENCODE_INCLUDE_PATH=C:/deps/qrcode-win32-3.1.1/include
-    QRENCODE_LIB_PATH=C:/deps/qrcode-win32-3.1.1/dll
+    contains(QT_ARCH, i386) {
+        message("32-Bit build")
+        message("Target build name:" $$TARGET)
+
+        LIBS += -lshlwapi
+        LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
+        LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -lcrypt32
+        LIBS += -lws2_32 -lole32 -loleaut32 -luuid -lgdi32
+        LIBS += -lboost_system-mgw49-mt-s-1_57 -lboost_filesystem-mgw49-mt-s-1_57 -lboost_program_options-mgw49-mt-s-1_57 -lboost_thread-mgw49-mt-s-1_57
+        LIBS += -L"C:/deps/MinGW/msys/1.0/local/lib"
+
+        INCLUDEPATH += "C:/deps/MinGW/msys/1.0/local/include"
+
+        BOOST_LIB_SUFFIX=-mgw49-mt-s-1_57
+        BOOST_INCLUDE_PATH=C:/deps/boost_1_57_0
+        BOOST_LIB_PATH=C:/deps/boost_1_57_0/stage/lib
+        BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
+        BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
+        OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1l/include
+        OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1l
+        MINIUPNPC_INCLUDE_PATH=C:/deps/
+        MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
+        QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4
+        QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs
+        LEVELDB_INCLUDE_PATH+="C:/tools/leveldb/leveldb/include" "C:/tools/leveldb/leveldb/helpers"
+        LEVELDB_LIB_PATH=C:/tools/leveldb/x86
+        LIBS += "C:/tools/leveldb/x86/libleveldb.a" "C:/tools/leveldb/x86/libmemenv.a"
+
+
+    } else {
+        message("64-Bit build")
+        message("Target build name:" $$TARGET)
+        BOOST_LIB_SUFFIX=-mgw63-mt-d-1_63
+        BOOST_INCLUDE_PATH=C:\tools\boost\x64\include\boost-1_63
+        BOOST_LIB_PATH=C:\tools\boost\boost_1_63_0\stage\lib
+        BDB_INCLUDE_PATH=C:\tools\berkeley-db\db4\x64\include
+        BDB_LIB_PATH=C:\tools\berkeley-db\db4\x64\lib
+        OPENSSL_INCLUDE_PATH=C:\tools\openssl\x64\include
+        OPENSSL_LIB_PATH=C:\tools\openssl\x64\lib
+        MINIUPNPC_INCLUDE_PATH=C:\tools\miniupnpc
+        MINIUPNPC_LIB_PATH=C:\tools\miniupnpc\miniupnpc
+        QRENCODE_INCLUDE_PATH=C:\tools\qrencode\x64\include
+        QRENCODE_LIB_PATH=C:\tools\qrencode\x64\lib
+        LIBEVENT_INCLUDE_PATH=C:\tools\libevent\x64\include
+        LIBEVENT_LIB_PATH=C:\tools\libevent\x64\lib
+        LEVELDB_INCLUDE_PATH+="C:/tools/leveldb/leveldb/include" "C:/tools/leveldb/leveldb/helpers"
+        LEVELDB_LIB_PATH=C:/tools/leveldb/x64
+        LIBS += "C:/tools/leveldb/x64/libleveldb.a" "C:/tools/leveldb/x64/libmemenv.a"
+
+    }
 }
 
 # for boost 1.37, add -mt to the boost libraries
@@ -57,10 +97,10 @@ UI_DIR = build
 
 # use: qmake "RELEASE=1"
 contains(RELEASE, 1) {
-    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
-    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.7 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
-    macx:QMAKE_LFLAGS += -mmacosx-version-min=10.7 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
-    macx:QMAKE_OBJECTIVE_CFLAGS += -mmacosx-version-min=10.7 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.8 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+    macx:QMAKE_CFLAGS += -mmacosx-version-min=10.8 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+    macx:QMAKE_LFLAGS += -mmacosx-version-min=10.8 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
+    macx:QMAKE_OBJECTIVE_CFLAGS += -mmacosx-version-min=10.8 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
 
     !windows:!macx {
         # Linux: static link
@@ -76,7 +116,7 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat,--large-address-aware -static
+win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat, -static
 win32:QMAKE_LFLAGS += -static-libgcc -static-libstdc++
 lessThan(QT_MAJOR_VERSION, 5): win32: QMAKE_LFLAGS *= -static
 
@@ -88,7 +128,7 @@ contains(USE_QRCODE, 1) {
     DEFINES += USE_QRCODE
     macx:LIBS += -lqrencode
     win32:INCLUDEPATH +=$$QRENCODE_INCLUDE_PATH
-    win32:LIBS += $$join(QRENCODE_LIB_PATH,,-L) -lqrcodelib
+    win32:LIBS += $$join(QRENCODE_LIB_PATH,,-L) -lqrencode
     !win32:!macx:LIBS += -lqrencode
 }
 
@@ -135,8 +175,6 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
 }
 
-INCLUDEPATH += src/leveldb/include src/leveldb/helpers
-LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
 
 ##hashing sources
 SOURCES += \
@@ -155,7 +193,9 @@ SOURCES += \
     src/fugue.c \
     src/hamsi.c 
 
-SOURCES +=     src/tor/address.c \
+### tor sources
+SOURCES += src/tor/anonymize.cpp \
+    src/tor/address.c \
     src/tor/addressmap.c \
     src/tor/aes.c \
     src/tor/backtrace.c \
@@ -208,7 +248,6 @@ SOURCES +=     src/tor/address.c \
     src/tor/onion_ntor.c \
     src/tor/onion_tap.c \
     src/tor/policies.c \
-    src/tor/anonymize.cpp \
     src/tor/procmon.c \
     src/tor/reasons.c \
     src/tor/relay.c \
@@ -262,7 +301,7 @@ NO_LEVELDB=1
     QMAKE_EXTRA_TARGETS += genbuild
     DEFINES += HAVE_BUILD_INFO
 }
-
+USE_O3=1
 contains(USE_O3, 1) {
     message(Building O3 optimization flag)
     QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -461,6 +500,8 @@ SOURCES += src/qt/bitcoin.cpp \
     src/scrypt.cpp \
     src/pbkdf2.cpp \
     src/txdb-leveldb.cpp \
+    src/json/json_spirit_reader.cpp \
+    src/json/json_spirit_writer.cpp \
     src/bloom.cpp \
     src/hash.cpp
 
@@ -517,7 +558,6 @@ OTHER_FILES += \
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
     macx:BOOST_LIB_SUFFIX = -mt
-    win32:BOOST_LIB_SUFFIX = -mgw49-mt-s-1_57
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
@@ -525,7 +565,7 @@ isEmpty(BOOST_THREAD_LIB_SUFFIX) {
 }
 
 isEmpty(BDB_LIB_PATH) {
-    macx:BDB_LIB_PATH = /opt/local/lib/db48
+    macx:BDB_LIB_PATH = /usr/local/Cellar/berkeley-db4/4.8.30/lib
 }
 
 isEmpty(BDB_LIB_SUFFIX) {
@@ -533,24 +573,33 @@ isEmpty(BDB_LIB_SUFFIX) {
 }
 
 isEmpty(BDB_INCLUDE_PATH) {
-    macx:BDB_INCLUDE_PATH = /opt/local/include/db48
+    macx:BDB_INCLUDE_PATH = /usr/local/Cellar/berkeley-db4/4.8.30/include
 }
 
 isEmpty(BOOST_LIB_PATH) {
-    macx:BOOST_LIB_PATH = /opt/local/lib
+    macx:BOOST_LIB_PATH = /usr/local/lib
 }
 
 isEmpty(BOOST_INCLUDE_PATH) {
-    macx:BOOST_INCLUDE_PATH = /opt/local/include
+    macx:BOOST_INCLUDE_PATH = /usr/local/include
 }
 
 isEmpty(QRENCODE_LIB_PATH) {
-    macx:QRENCODE_LIB_PATH = /opt/local/lib
+    macx:QRENCODE_LIB_PATH = /usr/local/lib
 }
 
 isEmpty(QRENCODE_INCLUDE_PATH) {
-    macx:QRENCODE_INCLUDE_PATH = /opt/local/include
+    macx:QRENCODE_INCLUDE_PATH = /usr/local/include
 }
+
+isEmpty(OPENSSL_LIB_PATH) {
+    macx:OPENSSL_LIB_PATH = /usr/local/opt/openssl101/lib
+}
+
+isEmpty(OPENSSL_INCLUDE_PATH) {
+    macx:OPENSSL_INCLUDE_PATH = /usr/local/opt/openssl101/include
+}
+
 
 windows:DEFINES += WIN32
 windows:RC_FILE = src/qt/res/bitcoin-qt.rc
@@ -571,18 +620,25 @@ windows:!contains(MINGW_THREAD_BUGFIX, 0) {
     LIBS += -lrt
 }
 
-macx:HEADERS += src/qt/macdockiconhandler.h src/qt/macnotificationhandler.h
-macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm src/qt/macnotificationhandler.mm
-macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit -framework CoreServices
-macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
-macx:ICON = src/qt/res/icons/tele.icns
-macx:TARGET = "tele-Qt"
-macx:QMAKE_CFLAGS_THREAD += -pthread
-macx:QMAKE_LFLAGS_THREAD += -pthread
-macx:QMAKE_CXXFLAGS_THREAD += -pthread
+macx: {
+    HEADERS += src/qt/macdockiconhandler.h src/qt/macnotificationhandler.h
+    OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm src/qt/macnotificationhandler.mm
+    LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
+    DEFINES += MAC_OSX MSG_NOSIGNAL=0 IS_ARCH_64
+    ICON = src/qt/res/icons/tele.icns
+    TARGET = "tele-Qt"
+    QMAKE_CFLAGS_THREAD += -pthread
+    QMAKE_LFLAGS_THREAD += -pthread
+    QMAKE_CXXFLAGS_THREAD += -pthread
+    QMAKE_CXXFLAGS += -arch x86_64 -stdlib=libc++
+    QMAKE_CFLAGS += -arch x86_64
+    QMAKE_LFLAGS += -arch x86_64 -stdlib=libc++
+    INCLUDEPATH += src/leveldb/include src/leveldb/helpers
+    LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
+}
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
-INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH $$LIBEVENT_INCLUDE_PATH
+INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH $$LIBEVENT_INCLUDE_PATH $$LEVELDB_INCLUDE_PATH
 LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,) $$join(LIBEVENT_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 LIBS += -levent -lz
@@ -593,8 +649,8 @@ LIBS += -lboost_system$$BOOST_LIB_SUFFIX \
     -lboost_filesystem$$BOOST_LIB_SUFFIX \
     -lboost_program_options$$BOOST_LIB_SUFFIX \
     -lboost_thread$$BOOST_THREAD_LIB_SUFFIX \
-    -lboost_date_time$$BOOST_THREAD_LIB_SUFFIX \
     -lboost_chrono$$BOOST_LIB_SUFFIX
+
 
 contains(RELEASE, 1) {
     !windows:!macx {
