@@ -81,8 +81,17 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     notificator(0),
     rpcConsole(0)
 {
-    resize(850, 550);
-    setWindowTitle(tr("TELE ") + tr("Wallet"));
+
+#ifdef Q_OS_MAC
+    resize(960, 610);
+    setWindowTitle(tr("TELE wallet - Mac"));
+#elif _WIN32
+    resize(870, 600);
+    setWindowTitle(tr("TELE - Windows"));
+#else
+    resize(1030, 650);
+    setWindowTitle(tr("TELE - Linux"));
+#endif
 
 
 #ifndef Q_OS_MAC
