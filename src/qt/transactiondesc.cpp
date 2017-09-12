@@ -9,6 +9,7 @@
 #include "ui_interface.h"
 #include "base58.h"
 
+QString nCoinMaturity = QString::number(nCoinbaseMaturity + 10);
 QString TransactionDesc::FormatTxStatus(const CWalletTx& wtx)
 {
     if (!wtx.IsFinal())
@@ -218,7 +219,7 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx)
         strHTML += "<b>" + tr("Transaction ID") + ":</b> " + wtx.GetHash().ToString().c_str() + "<br>";
 
         if (wtx.IsCoinBase() || wtx.IsCoinStake())
-            strHTML += "<br>" + tr("Generated coins must mature 110 blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to \"not accepted\" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.") + "<br>";
+            strHTML += "<br>" + tr("Generated coins must mature ") + nCoinMaturity + (" blocks before they can be spent. When you generated this block, it was broadcast to the network to be added to the block chain. If it fails to get into the chain, its state will change to \"not accepted\" and it won't be spendable. This may occasionally happen if another node generates a block within a few seconds of yours.") + "<br>";
 
         //
         // Debug view
